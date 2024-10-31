@@ -18,4 +18,6 @@ data
 样品2 SONY 43吋
 样品3 亚马逊 43吋
 DeepQA-with-Pytorch
-LOFTR
+GeoFormer/croped_result
+GeoFormer/saved_ckpt
+Siamese-pytorch/logs*
