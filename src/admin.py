@@ -9,7 +9,7 @@ from gradio_image_prompter import ImagePrompter
 
 
 # 本地上传文件
-original_path = '../upload_data/img-orgin/'
+original_path = '/home/hechunjiang/gradio/样品1 LG 65UF8580/华为P50手机采集图像/监视器采集图像/'
 img_list_paths = os.listdir(original_path)
 img_list_paths.sort()
 all_files = [original_path + file for file in img_list_paths]

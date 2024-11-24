@@ -42,7 +42,6 @@ class KADID10kDataset(Dataset):
                 dist_img = row[0]   # 失真图像名称
                 ref_img = row[1]  # 原始图像名称
                 dmos = np.float32(row[2])  # DMOS 分数
-                variance = np.float32(row[3])  # 方差
                 self.dmos_data.append((dist_img, ref_img, dmos))
 
     def __len__(self):

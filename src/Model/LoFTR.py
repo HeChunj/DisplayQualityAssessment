@@ -21,7 +21,7 @@ class ModelLoFTR(AbstractStrategy):
         data = {"img1": img1, "img2": img2}
         print("ModelLoFTR match: ", data)
         start_time = time.time()
-        response = requests.post('http://localhost:5001/match', json=data)
+        response = requests.post('http://localhost:5002/match', json=data)
         print(f"Time elapsed, rpc: {time.time() - start_time} seconds")
         r = response.json()
         return r

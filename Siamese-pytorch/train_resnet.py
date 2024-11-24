@@ -50,7 +50,7 @@ if __name__ == "__main__":
     #----------------------------------------------------#
     # dataset_path    = "datasets"
     image_folder = "/data/hechunjiang/KADID-10k/kadid10k/images"
-    dmos_file = "/data/hechunjiang/KADID-10k/kadid10k/dmos.csv"
+    dmos_file = "/home/hechunjiang/gradio/GeoFormer/croped_result_LG/check_out.csv"
     #----------------------------------------------------#
     #   输入图像的大小，默认为105,105,3
     #----------------------------------------------------#
@@ -114,8 +114,8 @@ if __name__ == "__main__":
     #   batch_size      每次输入的图片数量
     #------------------------------------------------------#
     Init_Epoch          = 0
-    Epoch               = 150
-    batch_size          = 128
+    Epoch               = 500
+    batch_size          = 64
     
     #------------------------------------------------------------------#
     #   其它训练参数：学习率、优化器、学习率下降有关
@@ -150,7 +150,7 @@ if __name__ == "__main__":
     #------------------------------------------------------------------#
     #   save_dir        权值与日志文件保存的文件夹
     #------------------------------------------------------------------#
-    save_dir            = 'logs-resnet3'
+    save_dir            = 'logs-resnet4'
     #------------------------------------------------------------------#
     #   num_workers     用于设置是否使用多线程读取数据，1代表关闭多线程
     #                   开启后会加快数据读取速度，但是会占用更多内存
@@ -185,10 +185,11 @@ if __name__ == "__main__":
 
     model = SiameseResnet(input_shape, pretrained)
     # print(model)
+    # exit(0)
 
-    for name, param in model.named_parameters():
-        if "resnet" in name:
-            param.requires_grad = False
+    # for name, param in model.named_parameters():
+    #     if "resnet" in name:
+    #         param.requires_grad = False
 
     # total_num = sum(p.numel() for p in model.parameters())
     # trainable_num = sum(p.numel() for p in model.parameters() if p.requires_grad)

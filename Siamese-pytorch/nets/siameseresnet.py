@@ -19,7 +19,7 @@ def get_img_output_length(width, height):
 
 
 class SiameseResnet(nn.Module):
-    def __init__(self, input_shape, pretrained=False):
+    def __init__(self, input_shape, pretrained=True):
         super(SiameseResnet, self).__init__()
         self.resnet = models.resnet50(pretrained=False)
         if pretrained:

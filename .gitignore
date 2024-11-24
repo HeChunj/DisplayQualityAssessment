@@ -20,4 +20,10 @@ data
 DeepQA-with-Pytorch
 GeoFormer/croped_result
 GeoFormer/saved_ckpt
+GeoFormer/croped_result_AMAZON
+GeoFormer/croped_result_LG
+GeoFormer/croped_result_SONY
+GeoFormer/finetune_data
 Siamese-pytorch/logs*
+src/croped_result
+model_data
