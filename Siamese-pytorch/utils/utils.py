@@ -1,13 +1,19 @@
+import json
 import math
 import os
 import random
 from functools import partial
 from random import shuffle
+import time
 
+import cv2
 import numpy as np
 from PIL import Image
 
 from .utils_aug import center_crop, resize
+
+import matplotlib.pyplot as plt
+from PIL import ImageDraw
 
 
 def load_dataset(dataset_path, train_own_data, train_ratio):
@@ -221,15 +227,104 @@ def calculate_iou(box1, box2):
     return iou
 
 
-def map_b_to_a(b_value, b_min=-4, b_max=4, a_min=10, a_max=90):
+def map_model_to_opinion(b_value, b_min=-4, b_max=4, a_min=10, a_max=90):
     # model to opinion
     if type(b_value) != list:
-        return a_min + (b_value - b_min) / (b_max - b_min) * (a_max - a_min)
-    return [a_min + (b - b_min) / (b_max - b_min) * (a_max - a_min) for b in b_value]
+        return round(a_min + (b_value - b_min) / (b_max - b_min) * (a_max - a_min), 2)
+    return [round(a_min + (b - b_min) / (b_max - b_min) * (a_max - a_min), 2) for b in b_value]
 
 
-def map_a_to_b(a_value, a_min=10, a_max=90, b_min=-4, b_max=4):
+def map_opinion_to_model(a_value, a_min=10, a_max=90, b_min=-4, b_max=4):
     # opinion to model
     if type(a_value) != list:
-        return b_min + (a_value - a_min) / (a_max - a_min) * (b_max - b_min)
-    return [b_min + (a - a_min) / (a_max - a_min) * (b_max - b_min) for a in a_value]
+        return round(b_min + (a_value - a_min) / (a_max - a_min) * (b_max - b_min), 2)
+    return [round(b_min + (a - a_min) / (a_max - a_min) * (b_max - b_min), 2) for a in a_value]
+
+
+# 绘制直方图
+def pltHistogram(data):
+    plt.figure(figsize=(8, 5))
+    unique_values = np.unique(data)
+    # 计算频率的平均值
+    n, bins, patches = plt.hist(
+        data, bins=20, color='skyblue', edgecolor='black')
+    mean_frequency = len(data) / len(unique_values)
+    # 绘制水平参考线表示平均值
+    plt.axhline(mean_frequency, color='red', linestyle='--',
+                linewidth=1.5, label=f'Mean Frequency: {mean_frequency:.2f}')
+    plt.text(bins[len(bins) // 2], mean_frequency + 1,
+             f'Avg: {mean_frequency:.2f}', color='red', ha='center')
+    plt.title('Value Distribution')
+    plt.xlabel('Value')
+    plt.ylabel('Frequency')
+    plt.show()
+
+
+# 将label box绘制到图片上
+def show_box(img1, coordinates_ref, label_ref):
+    image_1 = Image.open(img1)
+    draw = ImageDraw.Draw(image_1)
+    for coordinate in coordinates_ref:
+        draw.rectangle([coordinate['left'], coordinate['top'],
+                       coordinate['right'], coordinate['bottom']], outline="red")
+    # 将label_ref中的框绘制到image_1上
+    for label in label_ref:
+        draw.rectangle([label['x1'], label['y1'], label['x2'],
+                       label['y2']], outline="green", width=4)
+    image_1.show()
+
+
+# 根据坐标裁剪图块
+def crop_image(image_path, coordinates_path, j, img_idx, demo_name="", result_dir=None):
+
+    # 检查图像路径是否存在
+    if not os.path.exists(image_path):
+        raise ValueError(f"Image not found: {image_path}")
+
+    image = cv2.imread(image_path)
+
+    # 检查坐标文件是否存在
+    if not os.path.exists(coordinates_path):
+        raise ValueError(f"Coordinates file not found: {coordinates_path}")
+    with open(coordinates_path, 'r') as json_file:
+        coordinates = json.load(json_file)
+
+    # 记录开始的时间
+    start_time = time.time()
+
+    # 记录裁剪的图块的地址
+    cropped_image_paths = []
+
+    if result_dir is None:
+        result_dir = f'/home/hechunjiang/gradio/GeoFormer/finetune_data/{demo_name}/{img_idx}/param_{j}/'
+
+    # 检查目录是否存在，如果不存在则创建
+    if not os.path.exists(result_dir):
+        os.makedirs(result_dir)
+
+    for i, data in enumerate(coordinates['coordinates']):
+        # 根据坐标裁剪图块
+        left = data['left']
+        top = data['top']
+        right = data['right']
+        bottom = data['bottom']
+
+        left = round(left)
+        top = round(top)
+        right = round(right)
+        bottom = round(bottom)
+
+        cropped_image = image[top:bottom, left:right]
+        cropped_image_save_path = os.path.join(
+            result_dir, f"cropped_image_{i}.png")
+
+        cv2.imwrite(cropped_image_save_path, cropped_image)
+        cropped_image_paths.append(cropped_image_save_path)
+
+    # 记录结束的时间
+    end_time = time.time()
+
+    print(
+        f"Processing image: {image_path}, time: {end_time - start_time} seconds")
+
+    return cropped_image_paths

@@ -25,7 +25,7 @@ from nets.siameseresnet import SiameseResnet
 from nets.siamesevit import SiameseVIT
 from utils.callbacks import LossHistory
 from utils.KADID10Kdataloader import dataset_collate
-from utils.utils import (calculate_iou, download_weights, get_lr_scheduler, load_dataset, map_b_to_a,
+from utils.utils import (calculate_iou, download_weights, get_lr_scheduler, load_dataset, map_model_to_opinion, map_opinion_to_model,
                          set_optimizer_lr, show_config)
 from utils.utils_fit import fit_one_epoch
 from utils.KADID10Kdataloader import KADID10kDataset
@@ -70,7 +70,7 @@ def main(config: OmegaConf):
     # dmos_file_train = "/home/hechunjiang/gradio/GeoFormer/finetune_data/40_finetune_data_new.csv"
     # dmos_file_val = "/home/hechunjiang/gradio/GeoFormer/finetune_data/all_test_finetune_data_baipingheng.csv"
     # ----------------------------------------------------#
-    #   输入图像的大小，默认为224,224
+    #   输入图像的大小，默认为256,256
     # ----------------------------------------------------#
     input_shape = config["image_size"]
     # ----------------------------------------------------------------------------------------------------------------------------#
@@ -281,7 +281,7 @@ def main(config: OmegaConf):
     # ----------------------------------------------------#
     #   训练集和验证集的比例。
     # ----------------------------------------------------#
-    train_ratio = 0.8
+    train_ratio = config['train_ration']
     # 创建数据集
     dataset_train = KADID10kDataset(input_shape=input_shape,
                                     image_folder=image_folder, dmos_file=dmos_file_train, random=True, autoaugment_flag=True)
@@ -431,8 +431,8 @@ def get_final_output(logs_path: str, config: OmegaConf):
     for demo in demo_list:
         img_list_1 = []
         img_list_2 = []
-        scores = [[] for _ in range(config['total_img_num'])]
-        res = [[] for _ in range(config['total_img_num'])]
+        scores = [[] for _ in range(config['total_img_num'] + 1)]
+        res = [[] for _ in range(config['total_img_num'] + 1)]
 
         for i in range(begin_idx, end_idx + 1):
             img_list_1 = os.listdir(
@@ -480,7 +480,7 @@ def get_final_output(logs_path: str, config: OmegaConf):
                 avg_score = sum(res[i]) / len(res[i])
 
             # 将avg_score[0]添加到res_df[demo]中
-            res_df.loc[i - 1, demo] = map_b_to_a(avg_score[0])
+            res_df.loc[i - 1, demo] = map_model_to_opinion(avg_score[0])
 
             pbar.update()
 
@@ -496,9 +496,29 @@ if __name__ == "__main__":
     config = OmegaConf.load(args.config)
 
     model_list = ['vgg16', 'resnet50', 'vit']
-    for model in model_list:
-        config['pretrained_model'] = model
-        if config['get_output_only']:
-            get_final_output(config['logs_path'], config)
-        else:
-            main(config)
+
+    index_list = ["qingxidu", "baipingheng", "huijie",
+                  "caisebaohedu", "caisezhunquexing", "duibidu", "quyukongguang"]
+
+    for index in index_list:
+        config['target_index'] = index
+        config[
+            'dmos_file_train'] = f"/home/hechunjiang/gradio/GeoFormer/finetune_data/final_train_finetune_data_{index}.csv"
+        for model in model_list:
+            config['pretrained_model'] = model
+            if model != 'vgg16':
+                config['trainable_modules'] = ["fully_connect1",
+                                               "fully_connect2", "fully_connect3"]
+            else:
+                config['trainable_modules'] = [
+                    "fully_connect1", "fully_connect2"]
+
+            if model == 'vit':
+                config['image_size'] = [224, 224]
+            else:
+                config['image_size'] = [256, 256]
+
+            if config['get_output_only']:
+                get_final_output(config['logs_path'], config)
+            else:
+                main(config)
