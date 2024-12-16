@@ -8,7 +8,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, random_split
 
-from nets.siamese import Siamese
+from nets.siamesevgg import SiameseVgg
 from utils.callbacks import LossHistory
 from utils.KADID10Kdataloader import dataset_collate
 from utils.utils import (download_weights, get_lr_scheduler, load_dataset,
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     #----------------------------------------------------#
     # dataset_path    = "datasets"
     image_folder = "/data/hechunjiang/KADID-10k/kadid10k/images"
-    dmos_file = "/home/hechunjiang/gradio/GeoFormer/croped_result/check_out.csv"
+    dmos_file = "/home/hechunjiang/gradio/GeoFormer/croped_result_LG/check_out.csv"
     #----------------------------------------------------#
     #   输入图像的大小，默认为105,105,3
     #----------------------------------------------------#
@@ -144,11 +144,11 @@ if __name__ == "__main__":
     #------------------------------------------------------------------#
     #   save_period     多少个epoch保存一次权值
     #------------------------------------------------------------------#
-    save_period         = 20
+    save_period         = 100
     #------------------------------------------------------------------#
     #   save_dir        权值与日志文件保存的文件夹
     #------------------------------------------------------------------#
-    save_dir            = 'logs-kadid10k_3'
+    save_dir            = 'logs-vgg-tanh'
     #------------------------------------------------------------------#
     #   num_workers     用于设置是否使用多线程读取数据，1代表关闭多线程
     #                   开启后会加快数据读取速度，但是会占用更多内存
@@ -181,7 +181,7 @@ if __name__ == "__main__":
         else:
             download_weights("vgg16")  
 
-    model = Siamese(input_shape, pretrained)
+    model = SiameseVgg(input_shape, pretrained)
     if model_path != '':
         #------------------------------------------------------#
         #   权值文件请看README，百度网盘下载

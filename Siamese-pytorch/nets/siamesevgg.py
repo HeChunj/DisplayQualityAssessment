@@ -24,7 +24,8 @@ class SiameseVgg(nn.Module):
         
         flat_shape = 512 * get_img_output_length(input_shape[1], input_shape[0])
         self.fully_connect1 = torch.nn.Linear(flat_shape, 512)
-        self.fully_connect2 = torch.nn.Linear(512, 1)
+        self.fully_connect2 = torch.nn.Linear(512, 256)
+        self.fully_connect3 = torch.nn.Linear(256, 1)
 
     def forward(self, x1, x2):
         # x1, x2 = x
@@ -45,4 +46,6 @@ class SiameseVgg(nn.Module):
         #-------------------------#
         x = self.fully_connect1(x)
         x = self.fully_connect2(x)
+        x = self.fully_connect3(x)
+        x = 4 * torch.tanh(x)
         return x

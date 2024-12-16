@@ -396,8 +396,7 @@ def get_final_output(logs_path: str, config: OmegaConf):
     保存最终的输出结果
     args:
         logs_path: str, 训练日志文件夹，可以拿到模型的权重
-        final_output_path: str, 保存最终输出结果的文件夹
-        target_index: str, 评价指标
+        config: OmegaConf, 配置文件
     '''
     # 1. 准备配置
     config_list = {
@@ -499,6 +498,13 @@ if __name__ == "__main__":
 
     index_list = ["qingxidu", "baipingheng", "huijie",
                   "caisebaohedu", "caisezhunquexing", "duibidu", "quyukongguang"]
+    
+    logs_path = "/home/hechunjiang/gradio/Siamese-pytorch/logs/"
+    demo_list = os.listdir(logs_path)
+    demo_list = [x for x in demo_list if os.path.isdir(os.path.join(logs_path, x))]
+    demo_list.sort()
+    demo_list = demo_list[:21]
+    now = 0
 
     for index in index_list:
         config['target_index'] = index
@@ -519,6 +525,8 @@ if __name__ == "__main__":
                 config['image_size'] = [256, 256]
 
             if config['get_output_only']:
-                get_final_output(config['logs_path'], config)
+                config['logs_path'] = demo_list[now]
+                now += 1
+                get_final_output("logs/" + config['logs_path'], config)
             else:
                 main(config)

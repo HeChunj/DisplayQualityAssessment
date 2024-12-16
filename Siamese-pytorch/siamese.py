@@ -56,6 +56,8 @@ class Siamese(object):
             siamese = SiameseVIT
         model = siamese(self.input_shape)
         model.load_state_dict(torch.load(self.model_path, map_location=device))
+        # model_CKPT = torch.load(self.model_path, map_location=device)
+        # model.load_state_dict(model_CKPT['model_state_dict'])
         self.net = model.eval()
         print('{} model loaded, model path: {}'.format(
             self.model_name, self.model_path))

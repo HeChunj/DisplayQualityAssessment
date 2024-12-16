@@ -63,9 +63,11 @@ def expand_baipingheng(img_path: str, param: int):
     """
     image = cv2.imread(img_path)
     if param > 0:
-        increase_matrix = np.array([1, 1, 1 + param / 100], dtype=float)
+        increase_matrix = np.array(
+            [1 - param / 100, 1 + param / 200, 1 + param / 100], dtype=float)
     else:
-        increase_matrix = np.array([1 + abs(param) / 100, 1, 1], dtype=float)
+        increase_matrix = np.array(
+            [1 + abs(param) / 100, 1, 1 - abs(param) / 100], dtype=float)
 
     # 分别调整 BGR 通道
     b, g, r = cv2.split(image)

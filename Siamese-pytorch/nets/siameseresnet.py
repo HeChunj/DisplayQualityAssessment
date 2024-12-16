@@ -54,4 +54,5 @@ class SiameseResnet(nn.Module):
         x = self.fully_connect1(x)
         x = self.fully_connect2(x)
         x = self.fully_connect3(x)
+        x = 4 * torch.tanh(x)
         return x

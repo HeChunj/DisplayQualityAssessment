@@ -52,12 +52,10 @@ def load_gray_scale_tensor_cv(im_path, device, imsize=None, dfactor=1, enhanced=
     # 如果是cr2文件，需要先转换为jpg
     im = None
     if im_path.endswith('.CR2') or im_path.endswith('.cr2'):
-        print('Loading CR2 image...')
         cr2_img = rawpy.imread(os.path.join(im_path))
         rgb_img = cr2_img.postprocess()  # a numpy RGB array
         im = cv2.cvtColor(rgb_img, cv2.COLOR_RGB2GRAY)
     else:
-        print('Loading normal image...')
         im = cv2.imread(im_path, cv2.IMREAD_GRAYSCALE)
 
     ho, wo = im.shape

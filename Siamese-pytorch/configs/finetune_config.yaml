@@ -8,7 +8,7 @@ distributed: False
 fp16: False
 
 get_final_output: True # 是否获取最后的输出，即给出最后的结果
-final_output_path: "final_output" # 上面为True时，输出的路径；否则无效
+final_output_path: "final_output_tanh" # 上面为True时，输出的路径；否则无效
 
 get_output_only: False # 是否只获取最后的输出，不进行微调
 logs_path: "logs" # 上面为True时，传入输出结果的函数的路径；否则无效
@@ -17,14 +17,14 @@ finetune_only: False # 是否只进行微调，不进行结果输出
 
 # ----- 训练参数 ----- #
 Init_Epoch: 0 # 模型当前开始的训练epoch
-Epoch: 50 # 模型总共训练的epoch
+Epoch: 80 # 模型总共训练的epoch
 batch_size: 32
 Init_lr: 0.001
 optimizer: "adam" # 'adam' or 'sgd'
 momentum: 0.9
 weight_decay: 0.0
 lr_decay_type: "cos" # 'cos' or 'step'
-save_period: 10 # 每隔多少个epoch保存一次模型
+save_period: 40 # 每隔多少个epoch保存一次模型
 save_dir: "logs" # 权值与日志文件保存的文件夹
 num_workers: 8
 # 微调的部分

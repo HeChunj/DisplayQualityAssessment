@@ -17,13 +17,18 @@ data
 样品1 LG 65UF8580
 样品2 SONY 43吋
 样品3 亚马逊 43吋
+样品4 创维 F32D80U
+样品5 KTC M27P20P
+样品6 红魔 GM001S
+样品7 海信 27G7K-PRO
+监视器采集图像
+aligned_imgs
 DeepQA-with-Pytorch
 GeoFormer/croped_result
 GeoFormer/saved_ckpt
-GeoFormer/croped_result_AMAZON
-GeoFormer/croped_result_LG
-GeoFormer/croped_result_SONY
+GeoFormer/croped_result_*
 GeoFormer/finetune_data
 Siamese-pytorch/logs*
 src/croped_result
+src/result
 model_data
