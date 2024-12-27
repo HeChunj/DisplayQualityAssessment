@@ -1,103 +1,114 @@
+import os
 import gradio as gr
 import pandas as pd
-import os
-
-all_scores = {
-    "LG": pd.DataFrame(),
-    "SONY": pd.DataFrame(),
-    "AMAZON": pd.DataFrame()
-}
-
-all_match_res = {
-    "LG": [],
-    "SONY": [],
-    "AMAZON": []
-}
-
-file_path = ["/home/hechunjiang/gradio/Siamese-pytorch/final_output_tanh-vgg16/final_output.csv",
-             "/home/hechunjiang/gradio/Siamese-pytorch/final_output_tanh-resnet50/final_output.csv",
-             "/home/hechunjiang/gradio/Siamese-pytorch/final_output_tanh-vit/final_output.csv"]
-
-index_list = ["清晰度 - 1", "清晰度 - 2", "清晰度 - 3",
-              "白平衡 - 1", "白平衡 - 2", "白平衡 - 3",
-              "灰阶 - 1", "灰阶 - 2", "灰阶 - 3",
-              "彩色饱和度 - 1", "彩色饱和度 - 2", "彩色饱和度 - 3",
-              "彩色准确性 - 1", "彩色准确性 - 2", "彩色准确性 - 3",
-              "对比度 - 1", "对比度 - 2", "对比度 - 3",
-              "区域控光 - 1", "区域控光 - 2", "区域控光 - 3"]
-
-demo_list = ["LG", "SONY", "AMAZON"]
-
-def init_data():
-    # file_path里面的数据是分别是三个模型的输出结果
-    # 每个文件里面是三个样品的输出结果
-    # 现在要把这些数据读出来，按照样品进行分组，存入all_scores中
-    for path in file_path:
-        data = pd.read_csv(path)
-        for head in data.columns:
-            all_scores[head] = pd.concat(
-                [all_scores[head], data[head]], axis=1)
-    for key in all_scores.keys():
-        all_scores[key].columns = ['VGG16', 'ResNet50', 'VIT']
-        # 插入一列opinion到第一列
-        all_scores[key].insert(0, 'opinion', pd.read_csv(
-            f"/home/hechunjiang/gradio/upload_data/opinion_scores/{key}.csv"))
-        # 四舍五入保留两位小数
-        all_scores[key] = all_scores[key].round(2)
-        all_scores[key].insert(0, '指标', index_list)
-    return all_scores
-
-def init_match_res():
-    for demo in demo_list:
-        img_list = os.listdir(f"/home/hechunjiang/gradio/src/result/match_res/{demo}")
-        for img in img_list:
-            all_match_res[demo].append(f"/home/hechunjiang/gradio/src/result/match_res/{demo}/{img}")
-
-init_data()
-init_match_res()
 
 
-def load_data(demo_name):
-    return all_scores[demo_name]
+def load_demo_img_list(demo_name):
+    img_dir = f"../upload_data/img-TV/{demo_name}"
+    img_list = os.listdir(img_dir)
+    img_list.sort(key=lambda x: int(x.split(".")[0]))
+    img_list = [f"{img_dir}/{img}" for img in img_list]
+    return img_list
 
 
-def load_match_res(demo_name):
-    return all_match_res[demo_name]
+monitor_img_list = [
+    "../upload_data/img-monitor/1.jpg",
+    "../upload_data/img-monitor/2.jpg",
+    "../upload_data/img-monitor/3.jpg",
+    "../upload_data/img-monitor/4.jpg",
+    "../upload_data/img-monitor/5.jpg",
+    "../upload_data/img-monitor/6.jpg",
+    "../upload_data/img-monitor/7.jpg",
+    "../upload_data/img-monitor/8.jpg",
+    "../upload_data/img-monitor/9.jpg",
+    "../upload_data/img-monitor/10.jpg",
+    "../upload_data/img-monitor/11.jpg",
+    "../upload_data/img-monitor/12.jpg",
+    "../upload_data/img-monitor/13.jpg",
+    "../upload_data/img-monitor/14.jpg",
+    "../upload_data/img-monitor/15.jpg",
+    "../upload_data/img-monitor/16.jpg",
+    "../upload_data/img-monitor/17.jpg",
+    "../upload_data/img-monitor/18.jpg",
+    "../upload_data/img-monitor/19.jpg",
+    "../upload_data/img-monitor/20.jpg",
+    "../upload_data/img-monitor/21.jpg"
+]
+
+index_list = ["清晰度",
+              "白平衡",
+              "灰阶",
+              "彩色饱和度",
+              "彩色准确性",
+              "对比度",
+              "区域控光"]
 
 
-# 加载数据
-lg_data = load_data('LG')
-sony_data = load_data('SONY')
-amazon_data = load_data('AMAZON')
-
-LG_dataframe = gr.DataFrame(value=lg_data, interactive=False)
-SONY_dataframe = gr.DataFrame(value=sony_data, interactive=False)
-AMAZON_dataframe = gr.DataFrame(value=amazon_data, interactive=False)
-
-table_interface_scores = gr.TabbedInterface(
-    [LG_dataframe, SONY_dataframe, AMAZON_dataframe],
-    tab_names=["样品1: LG", "样品2: SONY", "样品3: AMAZON"]
-)
-
-lg_match_res = load_match_res('LG')
-sony_match_res = load_match_res('SONY')
-amazon_match_res = load_match_res('AMAZON')
-
-LG_match_res = gr.Gallery(value=lg_match_res)
-SONY_match_res = gr.Gallery(value=sony_match_res)
-AMAZON_match_res = gr.Gallery(value=amazon_match_res)
+index_detail_list = ["清晰度 - 1", "清晰度 - 2", "清晰度 - 3",
+                     "白平衡 - 1", "白平衡 - 2", "白平衡 - 3",
+                     "灰阶 - 1", "灰阶 - 2", "灰阶 - 3",
+                     "彩色饱和度 - 1", "彩色饱和度 - 2", "彩色饱和度 - 3",
+                     "彩色准确性 - 1", "彩色准确性 - 2", "彩色准确性 - 3",
+                     "对比度 - 1", "对比度 - 2", "对比度 - 3",
+                     "区域控光 - 1", "区域控光 - 2", "区域控光 - 3"]
 
 
-match_res = gr.TabbedInterface(
-    [LG_match_res, SONY_match_res, AMAZON_match_res], tab_names=["LG", "SONY", "AMAZON"])
+def get_scores(score_path, demo_name):
+    if os.path.exists(score_path):
+        df = pd.read_csv(score_path)
+        df = df.round(2)
+        return df[demo_name].tolist()
+    else:
+        return [0] * 21
 
-table_interface_img = gr.TabbedInterface([match_res], tab_names=["匹配结果展示"])
 
-with gr.Blocks() as display:
-    with gr.Row():
-        with gr.Column():
-            gr.TabbedInterface(
-                [table_interface_scores, table_interface_img],
-                tab_names=["分数展示", "图片展示"],
-                title="展示界面"
-            )
+def cal_selected_image(score_state, score_state_list, selection: gr.SelectData):
+    score_state = score_state_list[selection.index]
+    return monitor_img_list[selection.index], score_state
+
+
+def cal_score(score_state):
+    return score_state
+
+
+def get_show_page(demo_name):
+    with gr.Blocks() as display:
+        image_list = load_demo_img_list(demo_name)
+        gr.HTML(value="<h1 style='text-align: center;'>结果展示</h1>")
+        score_path = f"static/final_output_{demo_name}/final_output.csv"
+        score_state_list = gr.State(value=get_scores(score_path, demo_name))
+        with gr.Row():
+            gallery = gr.Gallery(value=image_list, preview=True)
+            monitor_img = gr.Image(
+                value=monitor_img_list[0], label="monitor图片")
+            score_state = gr.State(value=0)
+            gallery.select(fn=cal_selected_image,
+                           inputs=[score_state, score_state_list], outputs=[monitor_img, score_state])
+        with gr.Row():
+            with gr.Column():
+                out = gr.Textbox(label="这张图片的得分是：", interactive=False,
+                                 value=score_state_list.value[0])
+            with gr.Column():
+                with gr.Row():
+                    with gr.Accordion(label="得分详情", open=False):
+                        for i in range(0, len(score_state_list.value), 3):
+                            with gr.Row():
+                                for j in range(3):
+                                    if i + j < len(score_state_list.value):
+                                        gr.Textbox(
+                                            label=f"{index_detail_list[i + j]} 得分：", interactive=False, value=score_state_list.value[i + j])
+                                avg_score = sum(
+                                    score_state_list.value[i:i+3]) / min(3, len(score_state_list.value) - i)
+                                gr.Textbox(
+                                    label=f"{index_list[i // 3]} 得分：", interactive=False, value=round(avg_score, 2))
+                        with gr.Row():
+                            with gr.Column():
+                                gr.Textbox(label="总体评分：", interactive=False, value=round(
+                                    sum(score_state_list.value) / len(score_state_list.value), 2))
+                            with gr.Column():
+                                download_button = gr.DownloadButton(variant="primary",
+                                                                    value=f"static/final_output_{demo_name}/final_output.csv", label="下载评价结果")
+        score_state.change(cal_score, score_state, out)
+    display.queue()
+    display.startup_events()
+    return display

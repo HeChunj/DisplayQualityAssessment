@@ -1,15 +1,13 @@
 import gradio as gr
 import os
 import requests
-import numpy as np
 import shutil
-from PIL import Image
 import json
 from gradio_image_prompter import ImagePrompter
 
 
 # 本地上传文件
-original_path = '/home/hechunjiang/gradio/样品1 LG 65UF8580/华为P50手机采集图像/监视器采集图像/'
+original_path = '/home/hechunjiang/gradio/upload_data/img-monitor/'
 img_list_paths = os.listdir(original_path)
 img_list_paths.sort()
 all_files = [original_path + file for file in img_list_paths]
@@ -89,10 +87,6 @@ def append_highlight(done, todo, file_path, prompts):
     return done, todo
 
 
-def adjust_param(param):
-    return param
-
-
 def adapt_img(path):
     return {"image": path, "points": []}
 
@@ -155,7 +149,7 @@ def save_bak_param(selected_model, threshold, image_size):
     update_param['param']['threshold'] = threshold
     update_param['param']['image_size'] = image_size
     r = requests.post('http://localhost:5003/config/save_config',
-                  json=update_param)
+                      json=update_param)
     if r.status_code == 200:
         gr.Info("保存成功", duration=1.5)
 

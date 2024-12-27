@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Pair Display</title>
+    <style>
+        .image-pair {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .image-pair img {
+            max-width: 45%;
+            height: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="image-container"></div>
+
+    <script>
+        const dstDir = 'croped_result_KTC/finetune_dst/1';
+        const refDir = 'croped_result_KTC/finetune_ref/1';
+
+        const imageContainer = document.getElementById('image-container');
+
+        // Example file names, replace with actual file names or fetch dynamically
+        const fileNames = ['cropped_image_0.png', 'cropped_image_1.png', 'cropped_image_2.png'];
+
+        fileNames.forEach(fileName => {
+            const pairDiv = document.createElement('div');
+            pairDiv.className = 'image-pair';
+
+            const dstImg = document.createElement('img');
+            dstImg.setAttribute('src', `${dstDir}/${fileName}`);
+            dstImg.className = 'lazy';
+
+            const refImg = document.createElement('img');
+            refImg.setAttribute('src', `${refDir}/${fileName}`);
+            refImg.className = 'lazy';
+
+            pairDiv.appendChild(dstImg);
+            pairDiv.appendChild(refImg);
+            imageContainer.appendChild(pairDiv);
+        });
+    </script>
+</body>
+
+</html>

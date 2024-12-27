@@ -1,16 +1,32 @@
 GeoFormer:
   host: 0.0.0.0
-  image_size: 540
-  port: 5001
-  threshold: 0.5
-LoFTR:
-  host: 0.0.0.0
   image_size: 640
-  port: 5002
-  threshold: 0.5
+  port: 5001
+  threshold: 0.9
+  img_threshold:
+    - -1
+    - 0.9
+    - 0.9
+    - 0.9
+    - 0.9
+    - 0.9
+    - 0.9
+    - 0.9
+    - 0.9
+    - 0.7
+    - 0.7
+    - 0.9
+    - 0.9
+    - 0.9
+    - 0.9
+    - 0.9
+    - 0.9
+    - 0.9
+    - 0.7
+    - 0.5
+    - 0.5
+    - 0.5
+
 config_server:
   host: 0.0.0.0
   port: 5003
-null:
-  image_size: 640
-  threshold: 0.91
