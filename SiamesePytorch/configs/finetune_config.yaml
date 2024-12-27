@@ -1,0 +1,89 @@
+pretrained_model: "resnet50" # 采用的预训练模型
+target_index: "qingxidu" # 微调的指标
+
+device: "cuda"
+
+distributed: False
+
+fp16: False
+
+get_final_output: True # 是否获取最后的输出，即给出最后的结果
+final_output_path: "final_output_tanh" # 上面为True时，输出的路径；否则无效
+
+get_output_only: True # 是否只获取最后的输出，不进行微调
+logs_path: "logs" # 上面为True时，传入输出结果的函数的路径；否则无效
+
+finetune_only: False # 是否只进行微调，不进行结果输出
+
+# ----- 训练参数 ----- #
+Init_Epoch: 0 # 模型当前开始的训练epoch
+Epoch: 50 # 模型总共训练的epoch
+batch_size: 32
+Init_lr: 0.001
+optimizer: "adam" # 'adam' or 'sgd'
+momentum: 0.9
+weight_decay: 0.0
+lr_decay_type: "cos" # 'cos' or 'step'
+save_period: 25 # 每隔多少个epoch保存一次模型
+save_dir: "logs" # 权值与日志文件保存的文件夹
+num_workers: 8
+# 微调的部分
+trainable_modules:
+  - "fully_connect1"
+  - "fully_connect2"
+  - "fully_connect3"
+
+# ----- 以下参数根据模型相关文件放置的具体位置进行修改 ----- #
+# 模型保存的路径
+vgg16_model_path: "/home/hechunjiang/gradio/Siamese-pytorch/model_data/best_epoch_weights_kadid10k_vgg16_tanh.pth"
+resnet50_model_path: "/home/hechunjiang/gradio/Siamese-pytorch/model_data/best_epoch_weights_kadid10k_resnet50_tanh.pth"
+vit_model_path: "/home/hechunjiang/gradio/Siamese-pytorch/model_data/best_epoch_weights_kadid10k_vit_tanh.pth"
+
+# ----- 以下参数和数据集相关 ----- #
+# 训练集的路径
+dmos_file_train: "/home/hechunjiang/gradio/GeoFormer/finetune_data/40_finetune_data_new.csv"
+train_ration: 0.9 # 训练集和验证集的比例
+image_size:
+  - 224
+  - 224
+
+# ----- 以下参数为常规配置，基本不需要修改 ----- #
+# 图片总数
+total_img_num: 21
+
+# 图片序号和指标的对应关系
+target_index_to_img_idx:
+  "qingxidu":
+    - 1
+    - 3
+  "baipingheng":
+    - 4
+    - 6
+  "huijie":
+    - 7
+    - 9
+  "caisebaohedu":
+    - 10
+    - 12
+  "caisezhunquexing":
+    - 13
+    - 15
+  "duibidu":
+    - 16
+    - 18
+  "quyukongguang":
+    - 19
+    - 21
+
+# 样品列表
+demo_list:
+  # - "LG"
+  # - "SONY"
+  # - "AMAZON"
+  - "SKYWORTH"
+  - "KTC"
+  - "REDMAGIC"
+  - "HISENSE"
+
+# loss加权文件
+loss_weights: "/home/hechunjiang/gradio/Siamese-pytorch/loss_weights/loss_weights.csv"

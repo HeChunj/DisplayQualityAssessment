@@ -28,7 +28,13 @@ GeoFormer/croped_result
 GeoFormer/saved_ckpt
 GeoFormer/croped_result_*
 GeoFormer/finetune_data
-Siamese-pytorch/logs*
+SiamesePytorch/logs*
+SiamesePytorch/final_output*
+SiamesePytorch/output_files*
 src/croped_result
 src/result
 model_data
+src/static/croped_result_*
+src/static/final_output_*
+src/static/image_pair_*
+src/model_ckpt

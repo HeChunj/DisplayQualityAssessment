@@ -1,3 +1,7 @@
+import gc
+import os
+import signal
+import sys
 from flask import Flask, request, jsonify
 import requests
 from argparse import Namespace
@@ -10,6 +14,8 @@ from model.full_model import GeoFormer as GeoFormer_
 
 from eval_tool.immatch.utils.data_io import load_gray_scale_tensor_cv
 from model.geo_config import default_cfg as geoformer_cfg
+
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 class GeoFormer():
@@ -117,7 +123,10 @@ def predict():
     configs = requests.post(
         'http://localhost:5003/config/get_config', json=post_data).json()
     data = request.json
-    print("Data: ", data['img1'], data['img2'])
+    threshoold_list = configs['img_threshold']
+    if (len(threshoold_list) > 0):
+        configs['threshold'] = threshoold_list[data['img_idx']]
+    print(configs['threshold'])
     g = GeoFormer(configs['image_size'], configs['threshold'], no_match_upscale=False,
                   ckpt='saved_ckpt/geoformer.ckpt', device='cuda')
     matches, kpts1, kpts2, scores = g.match_pairs(
@@ -126,6 +135,11 @@ def predict():
               "kpts2": kpts2.tolist(), "scores": scores.tolist()}
     # print("result: ", result)
     return jsonify(result)
+
+
+@app.route('/check', methods=['GET'])
+def check():
+    return jsonify({"status": "ok"})
 
 
 if __name__ == '__main__':
