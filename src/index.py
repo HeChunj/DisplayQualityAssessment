@@ -21,14 +21,14 @@ index_list = ["1. 清晰度 - 1", "2. 清晰度 - 2", "3. 清晰度 - 3",
               "16. 对比度 - 1", "17. 对比度 - 2", "18. 对比度 - 3",
               "19. 区域控光 - 1", "20. 区域控光 - 2", "21. 区域控光 - 3"]
 
-monitor_path = '/home/hechunjiang/gradio/upload_data/img-monitor/'
+monitor_path = '../upload_data/img-monitor/'
 img_list_monitor = os.listdir(monitor_path)
 img_list_monitor.sort(key=extract_number)
 all_files_monitor = [monitor_path + file for file in img_list_monitor]
 
 
 new_file_paths = []
-save_path = "/home/hechunjiang/gradio/upload_data/img-TV/"
+save_path = "../upload_data/img-TV/"
 
 
 def upload_file(files, demo_name, demo_name_state):
@@ -66,9 +66,17 @@ sampled_croped_image_path_list_ref = [[] for _ in range(22)]
 
 def model_handler(model_name, demo_name):
 
+    input_img_idx = [file.split('/')[-1].split('.')[0]
+                     for file in new_file_paths]
+    input_img_idx = [int(idx) for idx in input_img_idx]
+    input_img_idx.sort()
+
+    filter_files_monitor = [all_files_monitor[idx - 1]
+                            for idx in input_img_idx]
+
     # 获取匹配的结果
     croped_image_path_list_dst, croped_image_path_list_ref = GeoFormer.match(
-        new_file_paths, all_files_monitor, demo_name)
+        new_file_paths, filter_files_monitor, input_img_idx, demo_name)
 
     for j in range(1, 22):
         num_samples = min(10, len(croped_image_path_list_dst[j]))  # 选择最多10张图片
@@ -99,11 +107,10 @@ right_app1 = gr.Interface(
 
 def process_inference(demo_name, progress=gr.Progress()):
     progress(0, desc="开始...")
-    demo_name = "KTC"
-    if demo_name == "" or demo_name == None:
+    if demo_name == "" or demo_name == None or len(new_file_paths) == 0:
         return "请先上传图像"
 
-    for i in progress.tqdm(range(1, 2), desc="正在处理..."):
+    for i in progress.tqdm(range(1, 8), desc="正在处理..."):
         inference(demo_name, i)
         # time.sleep(1)
 
@@ -114,11 +121,13 @@ def process_inference(demo_name, progress=gr.Progress()):
 
 
 def show_croped_image(selection: gr.SelectData):
-    return sampled_croped_image_path_list_dst[selection.index + 1], sampled_croped_image_path_list_ref[selection.index + 1]
+    index = int(selection.value['image']['orig_name'].split('.')[0])
+    return sampled_croped_image_path_list_dst[index], sampled_croped_image_path_list_ref[index]
 
 
 def save_selected(img_display_selected, selection: gr.SelectData):
-    img_display_selected = selection.index + 1
+    index = int(selection.value.split('.')[0])
+    img_display_selected = index
     return img_display_selected
 
 

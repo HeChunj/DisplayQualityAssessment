@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 import uvicorn
 from index import index
 import gradio as gr
-from admin import admin
+from config import config
 from welcome import welcome
 from display import get_show_page
 
@@ -14,7 +14,7 @@ port = 7861
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 gr.mount_gradio_app(app, index, path="/index")
-gr.mount_gradio_app(app, admin, path="/admin")
+gr.mount_gradio_app(app, config, path="/config")
 gr.mount_gradio_app(app, welcome, path="/welcome")
 
 

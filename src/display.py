@@ -63,8 +63,9 @@ def get_scores(score_path, demo_name):
 
 
 def cal_selected_image(score_state, score_state_list, selection: gr.SelectData):
-    score_state = score_state_list[selection.index]
-    return monitor_img_list[selection.index], score_state
+    index = int(selection.value['image']['orig_name'].split('.')[0]) - 1
+    score_state = score_state_list[index]
+    return monitor_img_list[index], score_state
 
 
 def cal_score(score_state):
@@ -76,7 +77,7 @@ def get_show_page(demo_name):
         image_list = load_demo_img_list(demo_name)
         gr.HTML(value="<h1 style='text-align: center;'>结果展示</h1>")
         score_path = f"static/final_output_{demo_name}/final_output.csv"
-        score_state_list = gr.State(value=get_scores(score_path, demo_name))
+        score_state_list = gr.State(value=get_scores(score_path, demo_name)) 
         with gr.Row():
             gallery = gr.Gallery(value=image_list, preview=True)
             monitor_img = gr.Image(

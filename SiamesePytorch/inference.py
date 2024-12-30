@@ -41,9 +41,9 @@ def get_final_output(model_ckpt_name: str, config: OmegaConf):
     final_output_path = config['final_output_path']
     if not os.path.exists(final_output_path):
         os.makedirs(final_output_path)
-        res_df = pd.DataFrame()
+        res_df = pd.DataFrame(data=np.zeros(21), index=range(0, 21), columns=demo_list)
     elif not os.path.exists(f"{final_output_path}/final_output.csv"):
-        res_df = pd.DataFrame()
+        res_df = pd.DataFrame(data=np.zeros(21), index=range(0, 21), columns=demo_list)
     else:
         res_df = pd.read_csv(f"{final_output_path}/final_output.csv")
 
@@ -118,9 +118,6 @@ def inference():
     demo_name = args.demo_name
     i = int(args.i)  # i是指标序号
 
-    print("demo_name: ", args.demo_name)
-    print("i: ", args.i)
-
     config = OmegaConf.load(args.config)
 
     index_list = ["", "qingxidu", "baipingheng", "huijie",
@@ -129,7 +126,6 @@ def inference():
     model_ckpt_list = os.listdir("../src/model_ckpt")
     model_ckpt_list.sort()
     model_ckpt_list.insert(0, "")
-    print(model_ckpt_list)
 
     model = model_ckpt_list[i].split('_')[1]
     config['target_index'] = index_list[i]
@@ -141,6 +137,21 @@ def inference():
         config['image_size'] = [224, 224]
     else:
         config['image_size'] = [256, 256]
+
+    # 判断是否需要进入下面的逻辑
+    target_index = config['target_index']
+    begin_idx = config['target_index_to_img_idx'][target_index][0]
+    end_idx = config['target_index_to_img_idx'][target_index][1]
+    for j in range(begin_idx, end_idx + 1):
+        dst_path = f"static/croped_result_{demo_name}/finetune_dst/{j}/"
+        ref_path = f"static/croped_result_{demo_name}/finetune_ref/{j}/"
+        if not os.path.exists(dst_path) or not os.path.exists(ref_path):
+            return
+
+        img_list_1 = os.listdir(dst_path)
+        img_list_2 = os.listdir(ref_path)
+        if len(img_list_1) == 0 or len(img_list_2) == 0:
+            return
 
     get_final_output(model_ckpt_list[i], config)
 

@@ -95,10 +95,6 @@ def predict(img):
     return img["composite"]
 
 
-left_app1 = gr.Interface(fn=upload_file, inputs=gr.File(label="上传原图", file_count="multiple"),
-                         outputs=gr.Gallery(label="上传的结果", columns=[3]))
-
-
 def update_img_next(now):
     now = now + 1
     if now >= len(all_files):
@@ -192,7 +188,7 @@ with gr.Blocks() as left_app2:
 with gr.Blocks() as left_app3:
     with gr.Row():
         selected_model = gr.Dropdown(
-            ["GeoFormer", "LoFTR", "SIFT"], label="请选择图像匹配算法", value="GeoFormer"
+            ["GeoFormer"], label="请选择图像匹配算法", value="GeoFormer"
         )
 
     with gr.Row():
@@ -204,12 +200,12 @@ with gr.Blocks() as left_app3:
     save_param.click(fn=save_bak_param, inputs=[selected_model,
                      threshold, image_size], outputs=None)
 
-with gr.Blocks() as admin:
+with gr.Blocks() as config:
     with gr.Row():
         # 本地上传文件
         with gr.Column():
             gr.TabbedInterface(
-                [left_app1, left_app2, left_app3],
-                tab_names=["上传原图", "获取关注区域", "调整模型参数"],
-                title="管理界面"
+                [left_app2, left_app3],
+                tab_names=["获取关注区域", "调整模型参数"],
+                title="配置界面"
             )
